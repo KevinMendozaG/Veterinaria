@@ -1,10 +1,21 @@
 import React, { useState, useEffect } from 'react'
-
+import { isEmpty,size, update } from 'lodash'
+import {addDocument, getCollection} from './actions'
 
 function App() {
   const [pets, setPets] = useState({
-    petName : "", petType : "",petBreed : "",birthDay : "",ownerName : "",ownerCellphone : "", ownerAdrress : "",ownerMail : ""
-})
+    id: "",petName : "", petType : "",petBreed : "",birthDay : "",ownerName : "",ownerCellphone : "", ownerAdrress : "",ownerMail : ""
+  })
+  const [error, setError] = useState(null)
+
+  useEffect(() => {
+    (async()=>{
+      const result = await getCollection("pets")
+      if (result.statusResponse) {
+        setPets(result.data)        
+      }
+    })()
+  }, [])
 
   const setPet = (event) =>{
 
@@ -12,12 +23,37 @@ function App() {
       ...pets,
       [event.target.name]:event.target.value
     })
-
+    
   }
 
+  const validForm = () => {
+    let isValid = true
+    setError(null)
+    if(isEmpty(pets.petName) || isEmpty(pets.petType) ||isEmpty(pets.petBreed) ||
+    isEmpty(pets.birthDay) || isEmpty(pets.ownerName) || isEmpty(pets.ownerCellphone) ||
+    isEmpty(pets.ownerAdrress) || isEmpty(pets.ownerMail)){
+      setError("Please fill all fields")
+      isValid = false 
+    }
+    return isValid
+  }
 
-  const addPet = () => {
-    
+  const addPet = async(e) => {
+    e.preventDefault()
+    if (!validForm()){
+      return
+    }
+    const result = await addDocument("pets", {petName:pets.petName, petType:pets.petType, petBreed:pets.petBreed, birthDay:pets.birthDay,
+      ownerName:pets.ownerName, ownerCellphone:pets.ownerCellphone, ownerAdrress:pets.ownerAdrress, ownerMail:pets.ownerMail})
+    if (!result.statusResponse) {
+      setError(result.error)
+      return
+    }
+
+    //setPets([...pets, {id: result.data.id, petName:pets.petName, petType:pets.petType, petBreed:pets.petBreed, birthDay:pets.birthDay,
+     // ownerName:pets.ownerName, ownerCellphone:pets.ownerCellphone, ownerAdrress:pets.ownerAdrress, ownerMail:pets.ownerMail }])
+
+    //setTask("")
   }
 
 
@@ -31,8 +67,8 @@ function App() {
          <h4 className="text-center">Pets</h4>
 
           <ul className="list-group">
-          <span className="lead">nombre mascota</span>
             <li className="list-group-item">
+              
                   <table class="table">
                     <thead>
                       <tr>
@@ -47,44 +83,56 @@ function App() {
                         <th scope="col">Actions</th>
                       </tr>
                     </thead>
-                    <tbody>
-                      <tr>
-                        <td>1</td>
-                        <td>Mark</td>
-                        <td>Otto</td>
-                        <td>@mdo</td>
-                        <td>@mdo</td>
-                        <td>@mdo</td>
-                        <td>@mdo</td>
-                        <td>@mdo</td>
-                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                            <button
-                              className="btn btn-primary btn-sm"
-                              >
-                                Editar
-                            </button>
-                            <button className="btn btn-secondary btn-sm">
-                                Eliminar
-                            </button>
-                        </div>
-                        
-                        
-                      </tr>
-                    </tbody>
+
+                    {
+                      size(pets) === 0 ? (
+                        <li className="list-group-item">There are no pets</li>
+                      ) : (
+                        <ul>
+                          {
+                            pets.map((pets) => (
+                              <tbody>
+                              <tr>
+                                <td>1</td>
+                                <td>Mark</td>
+                                <td>Otto</td>
+                                <td>@mdo</td>
+                                <td>@mdo</td>
+                                <td>@mdo</td>
+                                <td>@mdo</td>
+                                <td>@mdo</td>
+                                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                    <button
+                                      className="btn btn-primary btn-sm"
+                                      >
+                                        Editar
+                                    </button>
+                                    <button className="btn btn-secondary btn-sm">
+                                        Eliminar
+                                    </button>
+                                </div>
+                                
+                                
+                              </tr>
+                            </tbody>
+                            ))
+                          }
+
+                        </ul>
+                      )    
+                    }     
                   </table>              
             </li>
             
           </ul>
-
-
-
-
        </div>
 
        <div className="col-4">
          <h4>Add Pet</h4>
-          <form >
-             
+          <form onSubmit={addPet}>
+            {
+              error && <span className="text-danger">{error}</span>
+            }   
             <input
             type="text"
             className="form-control mb-2"
