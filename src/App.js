@@ -36,11 +36,15 @@ function App() {
       setError(result.error)
       return
     }
-    //setPets(result.data)
-    //setPet("")
+    setPets([...pets, {petName:pet.petName, petType:pet.petType, petBreed:pet.petBreed, birthDay:pet.birthDay,
+      ownerName:pet.ownerName, ownerCellphone:pet.ownerCellphone, ownerAdrress:pet.ownerAdrress, ownerMail:pet.ownerMail }])
+      console.log(pet.petName)
+    setPet({
+      id: "",petName : "", petType : "",petBreed : "",birthDay : "",ownerName : "",ownerCellphone : "", ownerAdrress : "",ownerMail : ""
+    })
   }
 
-  const deleteTask = async(id) =>{
+  const deletePet = async(id) =>{
     console.log(id)
     const result = await deleteDocument("pets", id)
     if (!result.statusResponse) {
@@ -48,8 +52,8 @@ function App() {
       return
     }
 
-    const filteredTask = pets.filter(pet =>pet.id != id)
-    setPets(filteredTask)
+    const filteredPet = pets.filter(pet =>pet.id != id)
+    setPets(filteredPet)
   }
 
 
@@ -84,7 +88,7 @@ function App() {
                         <ul >
                           {
                             pets.map((pe) => (
-                              <li className="list-group-item" key={pe.id} >
+                              <li className="list-group" key={pe.id} >
                               <tbody>
                               <tr>
                                 <td>{pe.petName}</td>
@@ -97,12 +101,12 @@ function App() {
                                 <td>{pe.ownerMail}</td>
                                 <td>
                                 <button
-                                  className="btn btn-primary btn-sm float-right mx-2"
+                                  className="btn btn-primary btn-sm mx-2"
                                 >
                                   Editar
                                 </button>
                                 <button className="btn btn-secondary btn-sm"
-                                onClick={() => deleteTask(pe.id)}>
+                                onClick={() => deletePet(pe.id)}>
                                    Eliminar
                                 </button>    
                                </td>
@@ -129,7 +133,7 @@ function App() {
             className="form-control mb-2"
             placeholder="Type pet's name..."
             onChange={saveInput}
-            value={pets.petName}
+            value={pet.petName}
             name="petName"
             required
             />
@@ -138,7 +142,7 @@ function App() {
             className="form-control mb-2"
             placeholder="Type pet's Type..."
             onChange={saveInput}
-            value={pets.petType}
+            value={pet.petType}
             name="petType"
             required
             />
@@ -147,7 +151,7 @@ function App() {
             className="form-control mb-2"
             placeholder="Type pet's Breed..."
             onChange={saveInput}
-            value={pets.petBreed}
+            value={pet.petBreed}
             name="petBreed"
             required
             />
@@ -156,7 +160,7 @@ function App() {
             className="form-control mb-2"
             placeholder="Type pet's BirthDay..."
             onChange={saveInput}
-            value={pets.birthDay}
+            value={pet.birthDay}
             name="birthDay"
             required
             />
@@ -165,7 +169,7 @@ function App() {
             className="form-control mb-2"
             placeholder="Type pet's Owner Name..."
             onChange={saveInput}
-            value={pets.ownerName}
+            value={pet.ownerName}
             name="ownerName"
             required
             />
@@ -174,7 +178,7 @@ function App() {
             className="form-control mb-2"
             placeholder="Type pet's Owner Phone Number..."
             onChange={saveInput}
-            value={pets.ownerCellphone}
+            value={pet.ownerCellphone}
             name="ownerCellphone"
             required
             />
@@ -183,7 +187,7 @@ function App() {
             className="form-control mb-2"
             placeholder="Type pet's Owner Address..."
             onChange={saveInput}
-            value={pets.ownerAdrress}
+            value={pet.ownerAdrress}
             name="ownerAdrress"
             required
             />
@@ -192,8 +196,8 @@ function App() {
             className="form-control mb-2"
             placeholder="Type pet's Owner Mail..."
             onChange={saveInput}
-            value={pets.ownerMail}
-            name="owenerMail"
+            value={pet.ownerMail}
+            name="ownerMail"
             required
             />
             <button
