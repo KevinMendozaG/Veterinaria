@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { isEmpty,size, update } from 'lodash'
-import {addDocument, getCollection} from './actions'
+import {addDocument, getCollection, deleteDocument} from './actions'
 
 function App() {
   const [pets, setPets] = useState([])
@@ -13,7 +13,7 @@ function App() {
     (async()=>{
       const result = await getCollection("pets")
       if (result.statusResponse) {
-        setPets(...pets, result.data)        
+        setPets(result.data)        
       }
     })()
   }, [])
@@ -27,34 +27,29 @@ function App() {
     
   }
 
-  const validForm = () => {
-    let isValid = true
-    setError(null)
-    if(isEmpty(pet.petName) || isEmpty(pet.petType) ||isEmpty(pet.petBreed) ||
-    isEmpty(pet.birthDay) || isEmpty(pet.ownerName) || isEmpty(pet.ownerCellphone) ||
-    isEmpty(pet.ownerAdrress) || isEmpty(pet.ownerMail)){
-      setError("Please fill all fields")
-      isValid = false 
-    }
-    return isValid
-  }
 
   const addPet = async(e) => {
     e.preventDefault()
-    //if (!validForm()){
-     // return
-    //}
     const result = await addDocument("pets", {petName:pet.petName, petType:pet.petType, petBreed:pet.petBreed, birthDay:pet.birthDay,
       ownerName:pet.ownerName, ownerCellphone:pet.ownerCellphone, ownerAdrress:pet.ownerAdrress, ownerMail:pet.ownerMail})
     if (!result.statusResponse) {
       setError(result.error)
       return
     }
+    //setPets(result.data)
+    //setPet("")
+  }
 
-    //setPets([...pets, {id: result.data.id, petName:pets.petName, petType:pets.petType, petBreed:pets.petBreed, birthDay:pets.birthDay,
-     // ownerName:pets.ownerName, ownerCellphone:pets.ownerCellphone, ownerAdrress:pets.ownerAdrress, ownerMail:pets.ownerMail }])
+  const deleteTask = async(id) =>{
+    console.log(id)
+    const result = await deleteDocument("pets", id)
+    if (!result.statusResponse) {
+      setError(result.error)
+      return
+    }
 
-    //setTask("")
+    const filteredTask = pets.filter(pet =>pet.id != id)
+    setPets(filteredTask)
   }
 
 
@@ -63,15 +58,11 @@ function App() {
       <h1>Veterinaria</h1>
      <hr/>
      <div className="row">
-
        <div className="col-8">
          <h4 className="text-center">Pets</h4>
-
           <ul className="list-group">
-            <li className="list-group-item">
-              
                   <table class="table">
-                    <thead>
+                    <thead class="thead-dark">
                       <tr>
                         <th scope="col">Pet's Name</th>
                         <th scope="col">Pet's Type</th>
@@ -84,45 +75,46 @@ function App() {
                         <th scope="col">Actions</th>
                       </tr>
                     </thead>
-                    </table>
+                  </table>
                     <table className="table">
                     {
                       size(pets) === 0 ? (
                         <li className="text-center">There are no pets</li>
                       ) : (
-                        <ul className="list-group">
+                        <ul >
                           {
-                            pets.map((pets) => (
+                            pets.map((pe) => (
+                              <li className="list-group-item" key={pe.id} >
                               <tbody>
                               <tr>
-                                <th>{pets.petName}</th>
-                                <td>{pets.petType}</td>
-                                <td>{pets.petBreed}</td>
-                                <td>{pets.birthDay}</td>
-                                <td>{pets.ownerName}</td>
-                                <td>{pets.ownerCellphone}</td>
-                                <td>{pets.ownerAdrress}</td>
-                                <td>{pets.ownerMail}</td>
+                                <td>{pe.petName}</td>
+                                <td>{pe.petType}</td>
+                                <td>{pe.petBreed}</td>
+                                <td>{pe.birthDay}</td>
+                                <td>{pe.ownerName}</td>
+                                <td>{pe.ownerCellphone}</td>
+                                <td>{pe.ownerAdrress}</td>
+                                <td>{pe.ownerMail}</td>
                                 <td>
                                 <button
                                   className="btn btn-primary btn-sm float-right mx-2"
                                 >
                                   Editar
                                 </button>
-                                <button className="btn btn-secondary btn-sm">
+                                <button className="btn btn-secondary btn-sm"
+                                onClick={() => deleteTask(pe.id)}>
                                    Eliminar
                                 </button>    
                                </td>
                               </tr>
                             </tbody>
+                            </li>
                             ))
                           }
                         </ul>
                       )    
                     }     
                     </table>              
-            </li>
-            
           </ul>
        </div>
 
