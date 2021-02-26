@@ -3,7 +3,8 @@ import { isEmpty,size, update } from 'lodash'
 import {addDocument, getCollection} from './actions'
 
 function App() {
-  const [pets, setPets] = useState({
+  const [pets, setPets] = useState([])
+  const [pet, setPet] = useState({
     id: "",petName : "", petType : "",petBreed : "",birthDay : "",ownerName : "",ownerCellphone : "", ownerAdrress : "",ownerMail : ""
   })
   const [error, setError] = useState(null)
@@ -12,15 +13,15 @@ function App() {
     (async()=>{
       const result = await getCollection("pets")
       if (result.statusResponse) {
-        setPets(result.data)        
+        setPets(...pets, result.data)        
       }
     })()
   }, [])
 
-  const setPet = (event) =>{
-
-    setPets({
-      ...pets,
+  const saveInput = (event) =>{
+    console.log(event.target.value)
+    setPet({
+      ...pet,
       [event.target.name]:event.target.value
     })
     
@@ -29,9 +30,9 @@ function App() {
   const validForm = () => {
     let isValid = true
     setError(null)
-    if(isEmpty(pets.petName) || isEmpty(pets.petType) ||isEmpty(pets.petBreed) ||
-    isEmpty(pets.birthDay) || isEmpty(pets.ownerName) || isEmpty(pets.ownerCellphone) ||
-    isEmpty(pets.ownerAdrress) || isEmpty(pets.ownerMail)){
+    if(isEmpty(pet.petName) || isEmpty(pet.petType) ||isEmpty(pet.petBreed) ||
+    isEmpty(pet.birthDay) || isEmpty(pet.ownerName) || isEmpty(pet.ownerCellphone) ||
+    isEmpty(pet.ownerAdrress) || isEmpty(pet.ownerMail)){
       setError("Please fill all fields")
       isValid = false 
     }
@@ -40,11 +41,11 @@ function App() {
 
   const addPet = async(e) => {
     e.preventDefault()
-    if (!validForm()){
-      return
-    }
-    const result = await addDocument("pets", {petName:pets.petName, petType:pets.petType, petBreed:pets.petBreed, birthDay:pets.birthDay,
-      ownerName:pets.ownerName, ownerCellphone:pets.ownerCellphone, ownerAdrress:pets.ownerAdrress, ownerMail:pets.ownerMail})
+    //if (!validForm()){
+     // return
+    //}
+    const result = await addDocument("pets", {petName:pet.petName, petType:pet.petType, petBreed:pet.petBreed, birthDay:pet.birthDay,
+      ownerName:pet.ownerName, ownerCellphone:pet.ownerCellphone, ownerAdrress:pet.ownerAdrress, ownerMail:pet.ownerMail})
     if (!result.statusResponse) {
       setError(result.error)
       return
@@ -83,51 +84,49 @@ function App() {
                         <th scope="col">Actions</th>
                       </tr>
                     </thead>
-
+                    </table>
+                    <table className="table">
                     {
                       size(pets) === 0 ? (
-                        <li className="list-group-item">There are no pets</li>
+                        <li className="text-center">There are no pets</li>
                       ) : (
-                        <ul>
+                        <ul className="list-group">
                           {
                             pets.map((pets) => (
                               <tbody>
                               <tr>
-                                <td>1</td>
-                                <td>Mark</td>
-                                <td>Otto</td>
-                                <td>@mdo</td>
-                                <td>@mdo</td>
-                                <td>@mdo</td>
-                                <td>@mdo</td>
-                                <td>@mdo</td>
-                                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                                    <button
-                                      className="btn btn-primary btn-sm"
-                                      >
-                                        Editar
-                                    </button>
-                                    <button className="btn btn-secondary btn-sm">
-                                        Eliminar
-                                    </button>
-                                </div>
-                                
-                                
+                                <th>{pets.petName}</th>
+                                <td>{pets.petType}</td>
+                                <td>{pets.petBreed}</td>
+                                <td>{pets.birthDay}</td>
+                                <td>{pets.ownerName}</td>
+                                <td>{pets.ownerCellphone}</td>
+                                <td>{pets.ownerAdrress}</td>
+                                <td>{pets.ownerMail}</td>
+                                <td>
+                                <button
+                                  className="btn btn-primary btn-sm float-right mx-2"
+                                >
+                                  Editar
+                                </button>
+                                <button className="btn btn-secondary btn-sm">
+                                   Eliminar
+                                </button>    
+                               </td>
                               </tr>
                             </tbody>
                             ))
                           }
-
                         </ul>
                       )    
                     }     
-                  </table>              
+                    </table>              
             </li>
             
           </ul>
        </div>
 
-       <div className="col-4">
+       <div className="col-3">
          <h4>Add Pet</h4>
           <form onSubmit={addPet}>
             {
@@ -137,66 +136,73 @@ function App() {
             type="text"
             className="form-control mb-2"
             placeholder="Type pet's name..."
-            onChange={(text) => setPets( {...pets, petName:text.target.value})}
+            onChange={saveInput}
             value={pets.petName}
             name="petName"
-            onChange = {setPet}
+            required
             />
             <input
             type="text"
             className="form-control mb-2"
             placeholder="Type pet's Type..."
-            onChange={(text) => setPets({...pets, petType:text.target.value})}
+            onChange={saveInput}
             value={pets.petType}
             name="petType"
+            required
             />
             <input
             type="text"
             className="form-control mb-2"
             placeholder="Type pet's Breed..."
-            onChange={(text) => setPets({...pets, petBreed:text.target.value})}
+            onChange={saveInput}
             value={pets.petBreed}
             name="petBreed"
+            required
             />
             <input
             type="text"
             className="form-control mb-2"
             placeholder="Type pet's BirthDay..."
-            onChange={(text) => setPets({...pets, birthDay:text.target.value})}
+            onChange={saveInput}
             value={pets.birthDay}
             name="birthDay"
+            required
             />
             <input
             type="text"
             className="form-control mb-2"
             placeholder="Type pet's Owner Name..."
-            onChange={(text) => setPets({...pets, ownerName:text.target.value})}
+            onChange={saveInput}
             value={pets.ownerName}
             name="ownerName"
+            required
             />
             <input
             type="text"
             className="form-control mb-2"
             placeholder="Type pet's Owner Phone Number..."
-            onChange={(text) => setPets({...pets, ownerCellphone:text.target.value})}
+            onChange={saveInput}
             value={pets.ownerCellphone}
             name="ownerCellphone"
+            required
             />
             <input
             type="text"
             className="form-control mb-2"
             placeholder="Type pet's Owner Address..."
-            onChange={(text) => setPets({...pets, ownerAdrress:text.target.value})}
+            onChange={saveInput}
             value={pets.ownerAdrress}
             name="ownerAdrress"
+            required
             />
             <input
             type="text"
             className="form-control mb-2"
             placeholder="Type pet's Owner Mail..."
-            onChange={(text) => setPets({...pets, ownerMail:text.target.value})}
+            onChange={saveInput}
             value={pets.ownerMail}
             name="owenerMail"
+            required
             />
             <button
             className="btn btn-dark btn-block"
