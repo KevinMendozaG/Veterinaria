@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react'
 import {size, update } from 'lodash'
-import {addDocument, getCollection, deleteDocument} from './actions'
+import {addDocument, getCollection, deleteDocument, updateDocument} from './actions'
 import swal from 'sweetalert'
 
 function App() {
+  const [editMode, setEditMode] = useState(false)
   const [pets, setPets] = useState([])
   const [pet, setPet] = useState({
     id: "",petName : "", petType : "",petBreed : "",birthDay : "",ownerName : "",ownerCellphone : "", ownerAdrress : "",ownerMail : ""
@@ -28,6 +29,24 @@ function App() {
     
   }
 
+  const savePet = async(e) => {
+    e.preventDefault()
+    console.log(pet.id)
+    console.log(pet.petName)
+    const result = await updateDocument("pets", pet.id, {petName:pet.petName, petType:pet.petType, petBreed:pet.petBreed, birthDay:pet.birthDay,
+      ownerName:pet.ownerName, ownerCellphone:pet.ownerCellphone, ownerAdrress:pet.ownerAdrress, ownerMail:pet.ownerMail})
+    if (!result.statusResponse) {
+      setError(result.error)
+      return
+    }
+    const editedPets = pets.map(item => item.id === pet.id ? {id:pet.id, petName:pet.petName, petType:pet.petType, petBreed:pet.petBreed, birthDay:pet.birthDay,
+      ownerName:pet.ownerName, ownerCellphone:pet.ownerCellphone, ownerAdrress:pet.ownerAdrress, ownerMail:pet.ownerMail} : item)
+    setPets(editedPets)
+    setEditMode(false)
+    setPet({
+      id: "",petName : "", petType : "",petBreed : "",birthDay : "",ownerName : "",ownerCellphone : "", ownerAdrress : "",ownerMail : ""
+    })
+  }
 
   const addPet = async(e) => {
     e.preventDefault()
@@ -72,11 +91,20 @@ function App() {
     setPets(filteredPet)
   }
 
+  const editPet = (thePet) =>{
+    setPet({
+      id: thePet.id,petName : thePet.petName, petType : thePet.petType,petBreed : thePet.petBreed,
+      birthDay : thePet.birthDay,ownerName : thePet.ownerName,ownerCellphone : thePet.ownerCellphone, ownerAdrress : thePet.ownerAdrress,ownerMail : thePet.ownerMail
+    })
+    console.log("ok")
+    setEditMode(true)
+    //setId(theTask.id)
+  }
 
   return (
     <div className="container mt-5">
       <button type="button" class="btn float-right btn-lg btn-outline-dark" data-toggle="modal" data-target="#exampleModal">
-              Create Pet
+              { editMode ? "Update Pet" : "Create Pet"}
             </button>
       <h1>Veterinary</h1>
      <hr/>
@@ -117,6 +145,7 @@ function App() {
                                 <div class="btn-group">
                                 <button
                                   className="btn btn-primary btn-sm mx-2"
+                                  onClick={() => editPet(pe)}
                                 >
                                   Update
                                 </button>
@@ -142,14 +171,14 @@ function App() {
               <div class="modal-dialog" role="document">
                 <div class="modal-content">
                   <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                    <h5 class="modal-title" id="exampleModalLabel">{ editMode ? "Update Pet":"Create Pet"}</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                       <span aria-hidden="true">&times;</span>
                     </button>
                   </div>
                   <div class="modal-body">
                     
-                  <form onSubmit={addPet}>
+                  <form onSubmit={ editMode ? savePet : addPet}>
                     {
                       error && <span className="text-danger">{error}</span>
                     }   
@@ -227,9 +256,9 @@ function App() {
                     /> 
                   <div class="modal-footer">
                     <button
-                    className="btn btn-dark btn-block"
+                    className={ editMode ? "btn btn-warning btn-block" : "btn btn-dark btn-block"}
                     type="submit"
-                    >Crear
+                    >{ editMode ? "Save" : "Create"}
                     </button>
                     <button type="button" class="btn btn-block btn-dark" data-dismiss="modal">Close</button>
                   </div>
