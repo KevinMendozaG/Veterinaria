@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
-import { isEmpty,size, update } from 'lodash'
+import {size, update } from 'lodash'
 import {addDocument, getCollection, deleteDocument} from './actions'
+import swal from 'sweetalert'
 
 function App() {
   const [pets, setPets] = useState([])
@@ -36,11 +37,24 @@ function App() {
       setError(result.error)
       return
     }
-    setPets([...pets, {petName:pet.petName, petType:pet.petType, petBreed:pet.petBreed, birthDay:pet.birthDay,
+    setPets([...pets, {id: result.data.id,petName:pet.petName, petType:pet.petType, petBreed:pet.petBreed, birthDay:pet.birthDay,
       ownerName:pet.ownerName, ownerCellphone:pet.ownerCellphone, ownerAdrress:pet.ownerAdrress, ownerMail:pet.ownerMail }])
       console.log(pet.petName)
     setPet({
       id: "",petName : "", petType : "",petBreed : "",birthDay : "",ownerName : "",ownerCellphone : "", ownerAdrress : "",ownerMail : ""
+    })
+  }
+
+  const showConfirmation = (id) => {
+    swal({
+      title: "Delete",
+      text:"Do you want to delete the pet?",
+      icon:"warning",
+      buttons: ["no","yes"]
+    }).then(respuesta => {
+      if(respuesta){
+        deletePet(id)
+      }
     })
   }
 
@@ -51,7 +65,9 @@ function App() {
       setError(result.error)
       return
     }
-
+    swal({text: "the pet was successfully deleted",
+    icon: "success"
+    })
     const filteredPet = pets.filter(pet =>pet.id != id)
     setPets(filteredPet)
   }
@@ -59,10 +75,13 @@ function App() {
 
   return (
     <div className="container mt-5">
-      <h1>Veterinaria</h1>
+      <button type="button" class="btn float-right btn-lg btn-outline-dark" data-toggle="modal" data-target="#exampleModal">
+              Create Pet
+            </button>
+      <h1>Veterinary</h1>
      <hr/>
      <div className="row">
-       <div className="col-8">
+       <div className="col-12">
          <h4 className="text-center">Pets</h4>
                     {
                       size(pets) === 0 ? (
@@ -87,7 +106,6 @@ function App() {
                             pets.map((pe) => (
                               <tr key={pe.id}>
                                 <td>{pe.petName}</td>
-                                <td>{pe.petName}</td>
                                 <td>{pe.petType}</td>
                                 <td>{pe.petBreed}</td>
                                 <td>{pe.birthDay}</td>
@@ -103,7 +121,7 @@ function App() {
                                   Update
                                 </button>
                                 <button className="btn btn-secondary btn-sm"
-                                onClick={() => deletePet(pe.id)}>
+                                onClick={() => showConfirmation(pe.id)}>
                                    Delete
                                 </button>  
                                 </div>  
@@ -119,88 +137,107 @@ function App() {
        </div>
 
        <div className="col-3">
-         <h4>Add Pet</h4>
-          <form onSubmit={addPet}>
-            {
-              error && <span className="text-danger">{error}</span>
-            }   
-            <input
-            type="text"
-            className="form-control mb-2"
-            placeholder="Type pet's name..."
-            onChange={saveInput}
-            value={pet.petName}
-            name="petName"
-            required
-            />
-            <input
-            type="text"
-            className="form-control mb-2"
-            placeholder="Type pet's Type..."
-            onChange={saveInput}
-            value={pet.petType}
-            name="petType"
-            required
-            />
-            <input
-            type="text"
-            className="form-control mb-2"
-            placeholder="Type pet's Breed..."
-            onChange={saveInput}
-            value={pet.petBreed}
-            name="petBreed"
-            required
-            />
-            <input
-            type="text"
-            className="form-control mb-2"
-            placeholder="Type pet's BirthDay..."
-            onChange={saveInput}
-            value={pet.birthDay}
-            name="birthDay"
-            required
-            />
-            <input
-            type="text"
-            className="form-control mb-2"
-            placeholder="Type pet's Owner Name..."
-            onChange={saveInput}
-            value={pet.ownerName}
-            name="ownerName"
-            required
-            />
-            <input
-            type="text"
-            className="form-control mb-2"
-            placeholder="Type pet's Owner Phone Number..."
-            onChange={saveInput}
-            value={pet.ownerCellphone}
-            name="ownerCellphone"
-            required
-            />
-            <input
-            type="text"
-            className="form-control mb-2"
-            placeholder="Type pet's Owner Address..."
-            onChange={saveInput}
-            value={pet.ownerAdrress}
-            name="ownerAdrress"
-            required
-            />
-            <input
-            type="text"
-            className="form-control mb-2"
-            placeholder="Type pet's Owner Mail..."
-            onChange={saveInput}
-            value={pet.ownerMail}
-            name="ownerMail"
-            required
-            />
-            <button
-            className="btn btn-dark btn-block"
-            type="submit"
-            >Crear</button>
-          </form>
+
+            <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+              <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <div class="modal-body">
+                    
+                  <form onSubmit={addPet}>
+                    {
+                      error && <span className="text-danger">{error}</span>
+                    }   
+                    <input
+                    type="text"
+                    className="form-control mb-2"
+                    placeholder="Type pet's name..."
+                    onChange={saveInput}
+                    value={pet.petName}
+                    name="petName"
+                    required
+                    />
+                    <input
+                    type="text"
+                    className="form-control mb-2"
+                    placeholder="Type pet's Type..."
+                    onChange={saveInput}
+                    value={pet.petType}
+                    name="petType"
+                    required
+                    />
+                    <input
+                    type="text"
+                    className="form-control mb-2"
+                    placeholder="Type pet's Breed..."
+                    onChange={saveInput}
+                    value={pet.petBreed}
+                    name="petBreed"
+                    required
+                    />
+                    <input
+                    type="text"
+                    className="form-control mb-2"
+                    placeholder="Type pet's BirthDay..."
+                    onChange={saveInput}
+                    value={pet.birthDay}
+                    name="birthDay"
+                    required
+                    />
+                    <input
+                    type="text"
+                    className="form-control mb-2"
+                    placeholder="Type pet's Owner Name..."
+                    onChange={saveInput}
+                    value={pet.ownerName}
+                    name="ownerName"
+                    required
+                    />
+                    <input
+                    type="text"
+                    className="form-control mb-2"
+                    placeholder="Type pet's Owner Phone Number..."
+                    onChange={saveInput}
+                    value={pet.ownerCellphone}
+                    name="ownerCellphone"
+                    required
+                    />
+                    <input
+                    type="text"
+                    className="form-control mb-2"
+                    placeholder="Type pet's Owner Address..."
+                    onChange={saveInput}
+                    value={pet.ownerAdrress}
+                    name="ownerAdrress"
+                    required
+                    />
+                    <input
+                    type="text"
+                    className="form-control mb-2"
+                    placeholder="Type pet's Owner Mail..."
+                    onChange={saveInput}
+                    value={pet.ownerMail}
+                    name="ownerMail"
+                    required
+                    /> 
+                  <div class="modal-footer">
+                    <button
+                    className="btn btn-dark btn-block"
+                    type="submit"
+                    >Crear
+                    </button>
+                    <button type="button" class="btn btn-block btn-dark" data-dismiss="modal">Close</button>
+                  </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
        </div>
      </div>
     </div>
