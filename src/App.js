@@ -64,9 +64,11 @@ function App() {
      <div className="row">
        <div className="col-8">
          <h4 className="text-center">Pets</h4>
-          <ul className="list-group">
-                  <table class="table table-sm table-bordered">
-                      <li className="list-group">
+                    {
+                      size(pets) === 0 ? (
+                        <li className="text-center">There are no pets</li>
+                      ) : (
+                        <table class="table table-sm table-bordered">
                         <thead class="thead-dark">
                           <tr>
                             <th scope="col">Pet's Name</th>
@@ -77,21 +79,14 @@ function App() {
                             <th scope="col">Owner Phone Number</th>
                             <th scope="col">Owener Address</th>
                             <th scope="col">Owener Mail</th>
-                            <th scope="col">Actions</th>
+                            <th scope="col" colspan="2" className="text-center">Actions</th>
                           </tr>
                         </thead>
-                    </li>
-                    {
-                      size(pets) === 0 ? (
-                        <li className="text-center">There are no pets</li>
-                      ) : (
-                        <ul className="list-group">
+                          <tbody>
                           {
                             pets.map((pe) => (
-                              <li className="list-group" key={pe.id} >
-                              <tbody>
-                              <tr>
-                                <th scope="row">{pe.petName}</th>
+                              <tr key={pe.id}>
+                                <td>{pe.petName}</td>
                                 <td>{pe.petName}</td>
                                 <td>{pe.petType}</td>
                                 <td>{pe.petBreed}</td>
@@ -100,27 +95,27 @@ function App() {
                                 <td>{pe.ownerCellphone}</td>
                                 <td>{pe.ownerAdrress}</td>
                                 <td>{pe.ownerMail}</td>
-                                <td>
+                                <td colspan="2">
+                                <div class="btn-group">
                                 <button
                                   className="btn btn-primary btn-sm mx-2"
                                 >
-                                  Editar
+                                  Update
                                 </button>
                                 <button className="btn btn-secondary btn-sm"
                                 onClick={() => deletePet(pe.id)}>
-                                   Eliminar
-                                </button>    
+                                   Delete
+                                </button>  
+                                </div>  
                                </td>
                               </tr>
-                            </tbody>
-                            </li>
                             ))
                           }
-                        </ul>
+                            </tbody>
+                      
+                      </table>              
                       )    
                     }     
-                    </table>              
-          </ul>
        </div>
 
        <div className="col-3">
