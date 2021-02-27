@@ -65,32 +65,33 @@ function App() {
        <div className="col-8">
          <h4 className="text-center">Pets</h4>
           <ul className="list-group">
-                  <table class="table">
-                    <thead class="thead-dark">
-                      <tr>
-                        <th scope="col">Pet's Name</th>
-                        <th scope="col">Pet's Type</th>
-                        <th scope="col">Pet's Breed</th>
-                        <th scope="col">Pet's BirthDay</th>
-                        <th scope="col">Owner Name</th>
-                        <th scope="col">Owner Phone Number</th>
-                        <th scope="col">Owener Address</th>
-                        <th scope="col">Owener Mail</th>
-                        <th scope="col">Actions</th>
-                      </tr>
-                    </thead>
-                  </table>
-                    <table className="table">
+                  <table class="table table-sm table-bordered">
+                      <li className="list-group">
+                        <thead class="thead-dark">
+                          <tr>
+                            <th scope="col">Pet's Name</th>
+                            <th scope="col">Pet's Type</th>
+                            <th scope="col">Pet's Breed</th>
+                            <th scope="col">Pet's BirthDay</th>
+                            <th scope="col">Owner Name</th>
+                            <th scope="col">Owner Phone Number</th>
+                            <th scope="col">Owener Address</th>
+                            <th scope="col">Owener Mail</th>
+                            <th scope="col">Actions</th>
+                          </tr>
+                        </thead>
+                    </li>
                     {
                       size(pets) === 0 ? (
                         <li className="text-center">There are no pets</li>
                       ) : (
-                        <ul >
+                        <ul className="list-group">
                           {
                             pets.map((pe) => (
                               <li className="list-group" key={pe.id} >
                               <tbody>
                               <tr>
+                                <th scope="row">{pe.petName}</th>
                                 <td>{pe.petName}</td>
                                 <td>{pe.petType}</td>
                                 <td>{pe.petBreed}</td>
